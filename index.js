@@ -2,28 +2,35 @@ const mineflayer = require('mineflayer');
 
 const bot = mineflayer.createBot({
   host: 'spydimc.falix.me',
-  username: 'AFK_Bot', // Change this to your bot's name or email
-  version: '1.20.1',    // Change to the server's specific version
+  username: 'AFK_Bot', // Keep this simple
+  version: '1.21',     // Ensure this matches the server's current version exactly
+  auth: 'offline'      // Required for cracked servers
 });
 
-// Logic to move continuously once logged in
 bot.on('spawn', () => {
-  console.log('Bot has spawned! Starting movement...');
+  console.log('Bot has spawned! Attempting to authenticate...');
   
-  // Set a loop to jump and walk
+  // IF your server uses a password plugin (like /login), uncomment the line below:
+  // bot.chat('/login YOUR_PASSWORD_HERE');
+  
+  // Continuous Movement Loop
   setInterval(() => {
     bot.setControlState('forward', true);
     bot.setControlState('jump', true);
     
-    // Stop moving after 1 second, then repeat
     setTimeout(() => {
       bot.setControlState('forward', false);
       bot.setControlState('jump', false);
     }, 1000);
-    
-  }, 3000); // Repeat every 3 seconds
+  }, 3000);
 });
 
-// Log errors and kick reasons
-bot.on('kicked', console.log);
-bot.on('error', console.log);
+// Handle Login Kicks (if it kicks you for being "unverified")
+bot.on('kicked', (reason) => {
+  console.log('Bot was kicked: ' + reason);
+});
+
+// Handle Connection Errors
+bot.on('error', (err) => {
+  console.log('Bot encountered an error: ' + err);
+});
