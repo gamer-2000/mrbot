@@ -5,69 +5,61 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.get('/', (req,res)=>{
-  res.send('AFK Bot Running')
+  res.send("AFK bot running")
 })
 
-app.listen(PORT, () => {
-  console.log('Web server running')
+app.listen(PORT,()=>{
+  console.log("Web server running")
 })
 
-const bot = mineflayer.createBot({
-  host: 'spydimc.falix.me',
-  username: 'AFK_Bot',
-  version: '1.21',
-  auth: 'offline'
-})
+function createBot(){
 
-bot.on('spawn', () => {
-  console.log('Bot joined server')
+  const bot = mineflayer.createBot({
+    host: 'spydimc.falix.me',
+    username: 'AFK_Bot',
+    version: '1.21',
+    auth: 'offline'
+  })
 
-  // wait before doing anything
-  setTimeout(() => {
+  bot.on('spawn',()=>{
+    console.log("Bot joined server")
 
-    // random movement every 15 sec
-    setInterval(() => {
+    setTimeout(()=>{
 
-      const actions = ['forward','back','left','right','jump']
-      const action = actions[Math.floor(Math.random()*actions.length)]
+      setInterval(()=>{
 
-      bot.setControlState(action,true)
+        const actions = ['forward','back','left','right','jump']
+        const action = actions[Math.floor(Math.random()*actions.length)]
 
-      setTimeout(()=>{
-        bot.setControlState(action,false)
-      },2000)
+        bot.setControlState(action,true)
 
-    },15000)
+        setTimeout(()=>{
+          bot.setControlState(action,false)
+        },2000)
 
-    // look around every 20 sec
-    setInterval(()=>{
-      const yaw = Math.random() * Math.PI * 2
-      const pitch = (Math.random() - 0.5) * Math.PI
-      bot.look(yaw,pitch)
-    },20000)
+      },15000)
 
-    // chat sometimes so server thinks player is real
-    setInterval(()=>{
-      const msgs = ['hello','hi','lol','afk','hmm']
-      const msg = msgs[Math.floor(Math.random()*msgs.length)]
-      bot.chat(msg)
-    },180000)
+      setInterval(()=>{
+        bot.look(Math.random()*Math.PI*2,(Math.random()-0.5)*Math.PI)
+      },20000)
 
-  },10000)
+    },10000)
 
-})
+  })
 
-bot.on('kicked', reason=>{
-  console.log('Kicked:',reason)
-})
+  bot.on('kicked',(reason)=>{
+    console.log("Kicked:",reason)
+  })
 
-bot.on('error', err=>{
-  console.log('Error:',err)
-})
+  bot.on('end',()=>{
+    console.log("Disconnected. Reconnecting in 15s...")
+    setTimeout(createBot,15000)
+  })
 
-bot.on('end', ()=>{
-  console.log('Disconnected, reconnecting...')
-  setTimeout(()=>{
-    process.exit()
-  },5000)
-})
+  bot.on('error',(err)=>{
+    console.log("Error:",err)
+  })
+
+}
+
+createBot()
