@@ -1,5 +1,5 @@
 const mineflayer = require('mineflayer');
-
+const port = process.env.PORT || 4000
 const bot = mineflayer.createBot({
   host: 'spydimc.falix.me',
   username: 'AFK_Bot', // Keep this simple
