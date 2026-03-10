@@ -1,36 +1,73 @@
-const mineflayer = require('mineflayer');
-const port = process.env.PORT || 4000
+const mineflayer = require('mineflayer')
+const express = require('express')
+
+const app = express()
+const PORT = process.env.PORT || 3000
+
+app.get('/', (req,res)=>{
+  res.send('AFK Bot Running')
+})
+
+app.listen(PORT, () => {
+  console.log('Web server running')
+})
+
 const bot = mineflayer.createBot({
   host: 'spydimc.falix.me',
-  username: 'AFK_Bot', // Keep this simple
-  version: '1.21',     // Ensure this matches the server's current version exactly
-  auth: 'offline'      // Required for cracked servers
-});
+  username: 'AFK_Bot',
+  version: '1.21',
+  auth: 'offline'
+})
 
 bot.on('spawn', () => {
-  console.log('Bot has spawned! Attempting to authenticate...');
-  
-  // IF your server uses a password plugin (like /login), uncomment the line below:
-  // bot.chat('/login YOUR_PASSWORD_HERE');
-  
-  // Continuous Movement Loop
-  setInterval(() => {
-    bot.setControlState('forward', true);
-    bot.setControlState('jump', true);
-    
-    setTimeout(() => {
-      bot.setControlState('forward', false);
-      bot.setControlState('jump', false);
-    }, 1000);
-  }, 3000);
-});
+  console.log('Bot joined server')
 
-// Handle Login Kicks (if it kicks you for being "unverified")
-bot.on('kicked', (reason) => {
-  console.log('Bot was kicked: ' + reason);
-});
+  // wait before doing anything
+  setTimeout(() => {
 
-// Handle Connection Errors
-bot.on('error', (err) => {
-  console.log('Bot encountered an error: ' + err);
-});
+    // random movement every 15 sec
+    setInterval(() => {
+
+      const actions = ['forward','back','left','right','jump']
+      const action = actions[Math.floor(Math.random()*actions.length)]
+
+      bot.setControlState(action,true)
+
+      setTimeout(()=>{
+        bot.setControlState(action,false)
+      },2000)
+
+    },15000)
+
+    // look around every 20 sec
+    setInterval(()=>{
+      const yaw = Math.random() * Math.PI * 2
+      const pitch = (Math.random() - 0.5) * Math.PI
+      bot.look(yaw,pitch)
+    },20000)
+
+    // chat sometimes so server thinks player is real
+    setInterval(()=>{
+      const msgs = ['hello','hi','lol','afk','hmm']
+      const msg = msgs[Math.floor(Math.random()*msgs.length)]
+      bot.chat(msg)
+    },180000)
+
+  },10000)
+
+})
+
+bot.on('kicked', reason=>{
+  console.log('Kicked:',reason)
+})
+
+bot.on('error', err=>{
+  console.log('Error:',err)
+})
+
+bot.on('end', ()=>{
+  console.log('Disconnected, reconnecting...')
+  setTimeout(()=>{
+    process.exit()
+  },5000)
+})
