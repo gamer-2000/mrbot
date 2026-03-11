@@ -6,13 +6,19 @@ const port = process.env.PORT || 10000;
 http.createServer((req, res) => res.end('Bot is running!')).listen(port);
 
 // --- 2. Configuration ---
-const botNames = ['AFK_Player', 'Survivor_Bot', 'Idle_Guy', 'Steve_AFK'];
-const serverConfig = {
-  host: 'spydimc.falix.me',
-  port: 25565, 
-  version: false, // Auto-detect version
-  auth: 'offline'
-};
+// --- Updated list of natural-sounding player names ---
+const botNames = [
+  'DragonSlayer99', 'PixelKnight', 'ShadowWalker', 'EnderCreeper', 
+  'BlueMist', 'MountainClimb', 'RedstoneExpert', 'SkyRunner', 
+  'IronMiner', 'StormBreaker', 'CobbleStone', 'OceanVoyager'
+];
+
+function getRandomName() {
+  // Picks a name from the list and adds a small random number 
+  // (e.g., 'PixelKnight7') to ensure it doesn't collide with existing players
+  const baseName = botNames[Math.floor(Math.random() * botNames.length)];
+  return baseName + Math.floor(Math.random() * 9);
+}
 
 function getRandomName() {
   return botNames[Math.floor(Math.random() * botNames.length)] + Math.floor(Math.random() * 99);
