@@ -1,30 +1,25 @@
 const mineflayer = require('mineflayer');
 const http = require('http');
 
-// --- 1. Keep Render/GitHub alive ---
+// 1. Web server for Render
 const port = process.env.PORT || 10000;
 http.createServer((req, res) => res.end('Bot is running!')).listen(port);
 
-// --- 2. Configuration ---
-// --- Updated list of natural-sounding player names ---
-const botNames = [
-  'DragonSlayer99', 'PixelKnight', 'ShadowWalker', 'EnderCreeper', 
-  'BlueMist', 'MountainClimb', 'RedstoneExpert', 'SkyRunner', 
-  'IronMiner', 'StormBreaker', 'CobbleStone', 'OceanVoyager'
-];
+// 2. Configuration (Define this before usage)
+const serverConfig = {
+  host: 'spydimc.falix.me',
+  port: 25565,
+  version: false,
+  auth: 'offline'
+};
 
-function getRandomName() {
-  // Picks a name from the list and adds a small random number 
-  // (e.g., 'PixelKnight7') to ensure it doesn't collide with existing players
-  const baseName = botNames[Math.floor(Math.random() * botNames.length)];
-  return baseName + Math.floor(Math.random() * 9);
-}
+const botNames = ['DragonSlayer', 'PixelKnight', 'ShadowWalker', 'EnderCreeper', 'BlueMist', 'IronMiner'];
 
 function getRandomName() {
   return botNames[Math.floor(Math.random() * botNames.length)] + Math.floor(Math.random() * 99);
 }
 
-// --- 3. The Bot Logic ---
+// 3. Bot Logic
 function createBot() {
   const bot = mineflayer.createBot({
     ...serverConfig,
@@ -34,20 +29,19 @@ function createBot() {
   bot.on('spawn', () => {
     console.log(`✅ Joined as ${bot.username}`);
     
-    // Auto-login (Uncomment if your server needs /login)
+    // Optional: Auto-login
     // setTimeout(() => bot.chat('/login YOUR_PASSWORD'), 2000);
 
-    // Human-like Jittery Movement
     const moveInterval = setInterval(() => {
       const action = Math.random() > 0.5 ? 'jump' : 'forward';
       bot.setControlState(action, true);
-      setTimeout(() => bot.clearControlStates(), 500 + Math.random() * 1000);
-    }, 8000 + Math.random() * 5000);
+      setTimeout(() => bot.clearControlStates(), 800 + Math.random() * 500);
+    }, 10000);
 
     bot.on('end', (reason) => {
       clearInterval(moveInterval);
-      console.log(`❌ Disconnected: ${reason}. Retrying...`);
-      setTimeout(createBot, 60000); // 1 minute wait to avoid throttling
+      console.log(`❌ Disconnected: ${reason}. Retrying in 60s...`);
+      setTimeout(createBot, 60000);
     });
   });
 
