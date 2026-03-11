@@ -2,47 +2,49 @@ const mineflayer = require('mineflayer');
 
 const botArgs = {
   host: 'spydimc.falix.me',
-  username: 'AFK_Bot', 
-  version: '1.21.1', // Use 1.21.1 based on your error
-  auth: 'offline'
+  username: `AFK_${Math.floor(Math.random() * 1000)}`, // Random name helps bypass some filters
+  version: '1.21.1', 
+  auth: 'offline',
+  hideErrors: true, // Don't crash on small errors
+  checkTimeoutInterval: 90000 // Give the server more time to respond
 };
 
 function createBot() {
-  console.log('--- Attempting to connect... ---');
+  console.log('--- Starting Connection Attempt ---');
   const bot = mineflayer.createBot(botArgs);
 
-  bot.on('spawn', () => {
-    console.log('Success! Bot is in the server.');
+  bot.once('spawn', () => {
+    console.log('✅ Bot joined successfully!');
     
-    // Movement Loop
+    // Random movement to look human
     setInterval(() => {
-      bot.setControlState('forward', true);
-      bot.setControlState('jump', true);
-      setTimeout(() => {
-        bot.setControlState('forward', false);
-        bot.setControlState('jump', false);
-      }, 1000);
-    }, 5000); // 5-second gap between jumps
+      const move = Math.random() > 0.5;
+      if (move) {
+        bot.setControlState('jump', true);
+        bot.setControlState('forward', true);
+        
+        setTimeout(() => {
+          bot.clearControlStates();
+        }, 500 + Math.random() * 1000);
+      }
+    }, 10000 + Math.random() * 5000); // Moves every 10-15 seconds
   });
 
-  // If the bot gets kicked or the connection resets
-  bot.on('end', () => {
-    const waitTime = 60000; // Wait 1 full minute
-    console.log(`Disconnected. Waiting ${waitTime/1000}s before trying again to avoid throttling...`);
-    setTimeout(createBot, waitTime);
+  bot.on('end', (reason) => {
+    // Longer wait time (2 minutes) to let the "Throttle" expire
+    console.log(`❌ Disconnected. Reason: ${reason}. Waiting 2 mins...`);
+    setTimeout(createBot, 120000); 
   });
 
   bot.on('error', (err) => {
     if (err.code === 'ECONNRESET') {
-      console.log('Connection reset by server. This usually means we are throttled.');
+      console.log('⚠️ Server closed the connection. (IP Blocked or Throttled)');
     } else {
-      console.log('Error:', err);
+      console.log('⚠️ Error:', err.message);
     }
-  });
-
-  bot.on('kicked', (reason) => {
-    console.log('Kicked for:', reason);
   });
 }
 
-createBot();
+// Start with a random delay so you don't hit the throttle immediately
+console.log('Waiting 10s to start...');
+setTimeout(createBot, 10000);
