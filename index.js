@@ -15,9 +15,9 @@ server.listen(port, '0.0.0.0', () => {
 
 const botArgs = {
   host: 'spydimc.falix.me',
-  port: 25565, // Use your Minecraft server port here
+  port: 25565, // Keep your port here
   username: 'AFK_Bot',
-  version: '1.21.1',
+  version: false, // <--- CHANGED TO FALSE
   auth: 'offline'
 };
 
