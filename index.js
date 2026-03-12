@@ -13,7 +13,7 @@ const serverConfig = {
   auth: 'offline'
 };
 
-const botNames = ['DragonSlayer', 'PixelKnight', 'ShadowWalker', 'EnderCreeper', 'BlueMist', 'IronMiner'];
+const botNames = ['Mrbroski', 'AuraaMember', 'ILOVEAM', 'Idontexist', 'BlueMist', 'IronMiner'];
 
 function getRandomName() {
   return botNames[Math.floor(Math.random() * botNames.length)] + Math.floor(Math.random() * 99);
